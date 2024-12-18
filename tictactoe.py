@@ -48,7 +48,7 @@ def result(board, action):
     """
     if action not in actions(board):
         raise Exception("Invalid Action!!!")
-    
+
     board = copy.deepcopy(board)
     i, j = action
 
