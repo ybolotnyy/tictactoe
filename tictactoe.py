@@ -39,13 +39,16 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    return [(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY]
+    return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}
 
 
 def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
+    if action not in actions(board):
+        raise Exception("Invalid Action!!!")
+    
     board = copy.deepcopy(board)
     i, j = action
 
