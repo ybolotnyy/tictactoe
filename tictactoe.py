@@ -60,28 +60,28 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    def row_win(i, player):
-        return all([board[i][j] == player for j in range(3)])
+    def row_win(i, _player):
+        return all([board[i][j] == _player for j in range(3)])
 
-    def column_win(j, player):
-        return all([board[i][j] == player for i in range(3)])
+    def column_win(j, _player):
+        return all([board[i][j] == _player for i in range(3)])
 
-    def diagonal_win(player):
+    def diagonal_win(_player):
         left_to_right = [(0, 0), (1, 1), (2, 2)]
         right_to_left = [(2, 0), (1, 1), (0, 2)]
 
         return any([
-            all([board[i][j] == player for i, j in left_to_right]),
-            all([board[i][j] == player for i, j in right_to_left])
+            all([board[i][j] == _player for i, j in left_to_right]),
+            all([board[i][j] == _player for i, j in right_to_left])
         ])
 
-    for player in [X, O]:
-        if any([row_win(i, player) for i in range(3)]):
-            return player
-        elif any([column_win(j, player) for j in range(3)]):
-            return player
-        elif diagonal_win(player):
-            return player
+    for _player in [X, O]:
+        if any([row_win(i, _player) for i in range(3)]):
+            return _player
+        elif any([column_win(j, _player) for j in range(3)]):
+            return _player
+        elif diagonal_win(_player):
+            return _player
 
 
 def terminal(board):
@@ -103,9 +103,9 @@ def utility(board):
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
     status = winner(board)
-    if status == "X":
+    if status == X:
         return 1
-    elif status == "O":
+    elif status == O:
         return -1
     else:
         return 0
@@ -117,41 +117,45 @@ def minimax(board):
     """
     if terminal(board):
         return None
-    Max = float("-inf")
-    Min = float("inf")
+    _max = float("-inf")
+    _min = float("inf")
 
     if player(board) == X:
-        return Max_Value(board, Max, Min)[1]
+        return max_value(board, _max, _min)[1]
     else:
-        return Min_Value(board, Max, Min)[1]
+        return min_value(board, _max, _min)[1]
 
 
-def Max_Value(board, Max, Min):
+def max_value(board, _max, _min):
+    """
+    Returns max value nad action for the current player on the board.
+    """
     move = None
     if terminal(board):
-        return [utility(board), None];
+        return [utility(board), None]
     v = float('-inf')
     for action in actions(board):
-        test = Min_Value(result(board, action), Max, Min)[0]
-        Max = max(Max, test)
+        test = min_value(result(board, action), _max, _min)[0]
+        _max = max(_max, test)
         if test > v:
             v = test
             move = action
-        if Max >= Min:
+        if _max >= _min:
             break
     return [v, move]
 
-def Min_Value(board, Max, Min):
+
+def min_value(board, _max, _min):
     move = None
     if terminal(board):
-        return [utility(board), None];
+        return [utility(board), None]
     v = float('inf')
     for action in actions(board):
-        test = Max_Value(result(board, action), Max, Min)[0]
-        Min = min(Min, test)
+        test = max_value(result(board, action), _max, _min)[0]
+        _min = min(_min, test)
         if test < v:
             v = test
             move = action
-        if Max >= Min:
+        if _max >= _min:
             break
     return [v, move]
