@@ -117,68 +117,41 @@ def minimax(board):
     """
     if terminal(board):
         return None
+    Max = float("-inf")
+    Min = float("inf")
 
-    all_actions = actions(board)
-
-    # now according to player I will choose min or max value function
     if player(board) == X:
-        v = float('-inf')
-        res_store = []
-        for action in all_actions:
-            res = maxValue(result(board, action))
-            print(f"{action} go result", res, "\n\n")
-            v = max(v, res[1])
-            res_store.append((res[0], res[1], action))
-        res_store.sort(key=operator.itemgetter(1, 0), reverse=False)
-        print("Max: ",res_store)
-        return res_store[0][2]
-
-    if player(board) == O:
-        v = float('inf')
-        res_store = []
-        for action in all_actions:
-            res = minValue(result(board, action))
-            print(f"\n {action} go result", res, "\n\n")
-            v = min(v, res[1])
-            res_store.append((res[0], res[1], action))
-        res_store.sort(key=operator.itemgetter(1, 0))
-        print("Min: ", res_store)
-        return res_store[0][2]
+        return Max_Value(board, Max, Min)[1]
+    else:
+        return Min_Value(board, Max, Min)[1]
 
 
-def maxValue(board, depth=0):
+def Max_Value(board, Max, Min):
+    move = None
     if terminal(board):
-        return (depth + 1, utility(board))
-    all_actions = actions(board)
+        return [utility(board), None];
     v = float('-inf')
-    compare = []
-    for action in all_actions:
-        res = minValue(result(board, action))
-        depth = res[0]
-        v = max(v, res[1])
-        compare.append((depth, v, action))
-    compare.sort(key=operator.itemgetter(1, 0))
-    i = 0
-    depth = 0
-    while i >= 0:
-        if compare[i][1] != v:
+    for action in actions(board):
+        test = Min_Value(result(board, action), Max, Min)[0]
+        Max = max(Max, test)
+        if test > v:
+            v = test
+            move = action
+        if Max >= Min:
             break
-        depth = compare[i][0]
-        i -= 1
-    return (compare[0][0] + 1, compare[0][1])
+    return [v, move]
 
-
-def minValue(board, depth=0):
+def Min_Value(board, Max, Min):
+    move = None
     if terminal(board):
-        return (depth + 1, utility(board))
-    all_actions = actions(board)
+        return [utility(board), None];
     v = float('inf')
-    compare = []
-    for action in all_actions:
-        res = maxValue(result(board, action))
-        depth = res[0]
-        v = min(v, res[1])
-        compare.append((depth, v, action))
-    compare.sort(key=operator.itemgetter(1, 0))
-    print("min comp:", compare, " /n")
-    return (compare[0][0] + 1, compare[0][1])
+    for action in actions(board):
+        test = Max_Value(result(board, action), Max, Min)[0]
+        Min = min(Min, test)
+        if test < v:
+            v = test
+            move = action
+        if Max >= Min:
+            break
+    return [v, move]
